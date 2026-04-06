@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>EPOCH — The First Web4 Agent</title>
+<link rel="icon" href="epoch-logo.png" type="image/png"/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#020208;
+  --surface:#08080f;
+  --surface2:#0e0e1a;
+  --border:rgba(90,60,180,0.25);
+  --border-bright:rgba(0,210,255,0.3);
+  --text:#d8d8f0;
+  --muted:#5a5a90;
+  --dim:#2a2a45;
+  --purple:#7c3aed;
+  --cyan:#00d2ff;
+  --cyan2:#06b6d4;
+  --purple-glow:rgba(124,58,237,0.35);
+  --cyan-glow:rgba(0,210,255,0.25);
+  --white:#f0f0ff;
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  font-family:'Space Grotesk',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* SCANLINES */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+  pointer-events:none;
+  z-index:999;
+}
+
+/* BG GLOW BLOBS */
+.bg-blobs{
+  position:fixed;inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  z-index:0;
+}
+
+.blob{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(120px);
+  opacity:0.12;
+}
+
+.blob-1{width:600px;height:600px;background:var(--purple);top:-200px;left:-100px}
+.blob-2{width:500px;height:500px;background:var(--cyan2);bottom:-150px;right:-100px}
+.blob-3{width:300px;height:300px;background:var(--purple);top:50%;left:50%;transform:translate(-50%,-50%)}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;
+  z-index:100;
+  padding:16px 32px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:rgba(2,2,8,0.7);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+
+.nav-logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-family:'Space Mono',monospace;
+  font-weight:700;
+  font-size:16px;
+  letter-spacing:4px;
+  color:var(--white);
+  text-transform:uppercase;
+}
+
+.nav-logo img{
+  width:28px;height:28px;
+  border-radius:6px;
+  image-rendering:pixelated;
+}
+
+.nav-center{
+  display:flex;
+  gap:32px;
+}
+
+.nav-center a{
+  font-size:13px;
+  color:var(--muted);
+  text-decoration:none;
+  font-family:'Space Mono',monospace;
+  letter-spacing:1px;
+  transition:color 0.15s;
+}
+
+.nav-center a:hover{color:var(--cyan)}
+
+.nav-pill{
+  font-family:'Space Mono',monospace;
+  font-size:10px;
+  letter-spacing:2px;
+  color:var(--cyan);
+  border:1px solid var(--border-bright);
+  padding:5px 14px;
+  border-radius:100px;
+  background:rgba(0,210,255,0.05);
+  animation:pillPulse 3s ease-in-out infinite;
+}
+
+@keyframes pillPulse{0%,100%{box-shadow:0 0 8px var(--cyan-glow)}50%{box-shadow:0 0 20px var(--cyan-glow)}}
+
+/* HERO */
+.hero{
+  position:relative;
+  z-index:2;
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  align-items:center;
+  max-width:1200px;
+  margin:0 auto;
+  padding:100px 48px 60px;
+  gap:60px;
+}
+
+.hero-left{}
+
+.hero-genesis{
+  font-family:'Space Mono',monospace;
+  font-size:10px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:var(--cyan);
+  margin-bottom:20px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.hero-genesis::before{
+  content:'';
+  display:inline-block;
+  width:24px;height:1px;
+  background:var(--cyan);
+}
+
+.hero h1{
+  font-size:clamp(56px,7vw,88px);
+  font-weight:700;
+  line-height:0.92;
+  letter-spacing:-3px;
+  color:var(--white);
+  margin-bottom:6px;
+}
+
+.hero-sub-title{
+  font-size:clamp(18px,2.5vw,26px);
+  font-weight:300;
+  color:var(--muted);
+  letter-spacing:2px;
+  font-family:'Space Mono',monospace;
+  margin-bottom:28px;
+  text-transform:uppercase;
+}
+
+.hero-sub-title span{color:var(--cyan)}
+
+.hero-desc{
+  font-size:16px;
+  color:var(--muted);
+  line-height:1.8;
+  max-width:440px;
+  margin-bottom:40px;
+  font-weight:400;
+}
+
+.hero-desc strong{color:var(--text);font-weight:600}
+
+.hero-actions{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:13px 26px;
+  border-radius:8px;
+  font-size:13px;
+  font-weight:600;
+  font-family:'Space Mono',monospace;
+  letter-spacing:1px;
+  cursor:pointer;
+  border:none;
+  text-decoration:none;
+  transition:all 0.2s;
+  text-transform:uppercase;
+}
+
+.btn-primary{
+  background:var(--purple);
+  color:#fff;
+  box-shadow:0 0 30px var(--purple-glow);
+}
+
+.btn-primary:hover{
+  background:#6d28d9;
+  box-shadow:0 0 50px var(--purple-glow),0 4px 20px rgba(0,0,0,0.4);
+  transform:translateY(-2px);
+}
+
+.btn-ghost{
+  background:transparent;
+  color:var(--cyan);
+  border:1px solid var(--border-bright);
+}
+
+.btn-ghost:hover{background:rgba(0,210,255,0.05);box-shadow:0 0 20px var(--cyan-glow)}
+
+/* HERO RIGHT — LOGO */
+.hero-right{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:24px;
+}
+
+.logo-frame{
+  position:relative;
+  width:320px;height:320px;
+}
+
+.logo-ring{
+  position:absolute;
+  inset:-20px;
+  border-radius:50%;
+  border:1px solid rgba(0,210,255,0.15);
+  animation:ringRotate 20s linear infinite;
+}
+
+.logo-ring::before{
+  content:'';
+  position:absolute;
+  top:-3px;left:50%;
+  width:6px;height:6px;
+  border-radius:50%;
+  background:var(--cyan);
+  box-shadow:0 0 12px var(--cyan);
+  transform:translateX(-50%);
+}
+
+.logo-ring-2{
+  position:absolute;
+  inset:-40px;
+  border-radius:50%;
+  border:1px solid rgba(124,58,237,0.1);
+  animation:ringRotate 35s linear infinite reverse;
+}
+
+.logo-ring-2::before{
+  content:'';
+  position:absolute;
+  bottom:-3px;left:50%;
+  width:4px;height:4px;
+  border-radius:50%;
+  background:var(--purple);
+  box-shadow:0 0 10px var(--purple);
+  transform:translateX(-50%);
+}
+
+@keyframes ringRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+.logo-glow{
+  position:absolute;
+  inset:10px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(0,210,255,0.08) 0%,transparent 70%);
+  animation:glowPulse 3s ease-in-out infinite;
+}
+
+@keyframes glowPulse{0%,100%{opacity:0.6}50%{opacity:1}}
+
+.logo-img{
+  position:relative;
+  z-index:2;
+  width:100%;height:100%;
+  object-fit:contain;
+  image-rendering:pixelated;
+  filter:drop-shadow(0 0 30px rgba(0,210,255,0.4)) drop-shadow(0 0 60px rgba(124,58,237,0.3));
+}
+
+.logo-caption{
+  font-family:'Space Mono',monospace;
+  font-size:10px;
+  letter-spacing:4px;
+  color:var(--dim);
+  text-transform:uppercase;
+  text-align:center;
+}
+
+/* TICKER */
+.ticker-bar{
+  position:relative;z-index:2;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:12px 0;
+  overflow:hidden;
+  white-space:nowrap;
+}
+
+.ticker-inner{
+  display:inline-flex;
+  gap:48px;
+  animation:ticker 30s linear infinite;
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  letter-spacing:2px;
+  color:var(--muted);
+  text-transform:uppercase;
+}
+
+.ticker-inner span{color:var(--cyan)}
+
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* AGENT SECTION */
+.section{
+  position:relative;z-index:2;
+  max-width:1100px;
+  margin:0 auto;
+  padding:80px 48px;
+}
+
+.section-eyebrow{
+  font-family:'Space Mono',monospace;
+  font-size:10px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:var(--cyan);
+  margin-bottom:12px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.section-eyebrow::before{
+  content:'';
+  display:inline-block;
+  width:20px;height:1px;
+  background:var(--cyan);
+}
+
+.section-title{
+  font-size:clamp(32px,4vw,52px);
+  font-weight:700;
+  letter-spacing:-1.5px;
+  color:var(--white);
+  line-height:1.1;
+  margin-bottom:14px;
+}
+
+.section-desc{
+  font-size:16px;
+  color:var(--muted);
+  line-height:1.8;
+  max-width:500px;
+  margin-bottom:40px;
+}
+
+/* API BAR */
+.api-bar{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px 20px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:16px;
+  flex-wrap:wrap;
+}
+
+.api-label{
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  letter-spacing:2px;
+  color:var(--muted);
+  white-space:nowrap;
+  text-transform:uppercase;
+}
+
+.api-input{
+  flex:1;
+  min-width:180px;
+  background:transparent;
+  border:none;
+  outline:none;
+  font-family:'Space Mono',monospace;
+  font-size:13px;
+  color:var(--text);
+}
+
+.api-input::placeholder{color:var(--dim)}
+
+.api-divider{width:1px;height:20px;background:var(--border);flex-shrink:0}
+
+.connect-btn{
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  background:none;
+  border:1px solid var(--border-bright);
+  color:var(--cyan);
+  padding:7px 18px;
+  border-radius:6px;
+  cursor:pointer;
+  transition:all 0.15s;
+  white-space:nowrap;
+}
+
+.connect-btn:hover{background:rgba(0,210,255,0.08)}
+
+.status-pill{
+  font-family:'Space Mono',monospace;
+  font-size:10px;
+  letter-spacing:2px;
+  padding:5px 14px;
+  border-radius:100px;
+  white-space:nowrap;
+  text-transform:uppercase;
+}
+
+.status-pill.on{background:rgba(16,185,129,0.1);color:#34d399;border:1px solid rgba(52,211,153,0.2)}
+.status-pill.off{background:rgba(239,68,68,0.08);color:#f87171;border:1px solid rgba(248,113,113,0.2)}
+
+/* CHAT WINDOW */
+.chat-wrap{
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+  background:var(--surface);
+  box-shadow:0 0 80px rgba(124,58,237,0.08),0 0 40px rgba(0,210,255,0.04);
+}
+
+.chat-top{
+  padding:14px 20px;
+  border-bottom:1px solid var(--border);
+  background:var(--surface2);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.chat-ident{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.chat-ident img{
+  width:36px;height:36px;
+  border-radius:8px;
+  image-rendering:pixelated;
+  box-shadow:0 0 16px rgba(0,210,255,0.3);
+}
+
+.chat-name{font-size:15px;font-weight:700;color:var(--white)}
+.chat-model{
+  font-family:'Space Mono',monospace;
+  font-size:10px;
+  color:var(--muted);
+  letter-spacing:1px;
+}
+
+.live-badge{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-family:'Space Mono',monospace;
+  font-size:10px;
+  color:#34d399;
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+
+.live-dot{
+  width:6px;height:6px;
+  border-radius:50%;
+  background:#34d399;
+  box-shadow:0 0 8px #34d399;
+  animation:livePulse 2s ease-in-out infinite;
+}
+
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+.chat-messages{
+  height:420px;
+  overflow-y:auto;
+  padding:24px 20px;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+.chat-messages::-webkit-scrollbar{width:3px}
+.chat-messages::-webkit-scrollbar-track{background:transparent}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+.msg{display:flex;gap:10px;animation:fadeUp 0.25s ease}
+.msg.user{flex-direction:row-reverse}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.msg-av{
+  width:30px;height:30px;
+  border-radius:8px;
+  flex-shrink:0;
+  image-rendering:pixelated;
+  box-shadow:0 0 12px rgba(0,210,255,0.25);
+}
+
+.msg-av-user{
+  width:30px;height:30px;
+  border-radius:8px;
+  flex-shrink:0;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+}
+
+.msg-body{max-width:72%}
+.msg.user .msg-body{align-items:flex-end;display:flex;flex-direction:column}
+
+.bubble{
+  padding:12px 16px;
+  border-radius:14px;
+  font-size:14px;
+  line-height:1.7;
+}
+
+.bubble.agent{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-top-left-radius:4px;
+  color:var(--text);
+}
+
+.bubble.user{
+  background:linear-gradient(135deg,var(--purple) 0%,#4f1d96 100%);
+  color:#fff;
+  border-top-right-radius:4px;
+}
+
+.bubble strong{color:var(--white);font-weight:600}
+.bubble code{
+  font-family:'Space Mono',monospace;
+  font-size:12px;
+  background:rgba(0,0,0,0.3);
+  padding:2px 6px;
+  border-radius:4px;
+  color:var(--cyan);
+}
+
+.msg-meta{
+  font-family:'Space Mono',monospace;
+  font-size:10px;
+  color:var(--dim);
+  margin-top:5px;
+  letter-spacing:1px;
+}
+
+/* TYPING */
+.typing-wrap{display:none;gap:10px;align-items:center}
+.typing-wrap.show{display:flex}
+
+.typing-dots{
+  display:flex;
+  gap:4px;
+  padding:12px 16px;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:14px;
+  border-top-left-radius:4px;
+}
+
+.typing-dots span{
+  width:5px;height:5px;
+  border-radius:50%;
+  background:var(--muted);
+  animation:bounce 1.2s ease-in-out infinite;
+}
+
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+
+@keyframes bounce{0%,100%{transform:translateY(0);background:var(--muted)}50%{transform:translateY(-6px);background:var(--cyan)}}
+
+/* SUGGESTIONS */
+.chat-suggestions{
+  padding:10px 20px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  border-top:1px solid var(--border);
+  background:var(--surface2);
+}
+
+.sug{
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  letter-spacing:0.5px;
+  color:var(--muted);
+  border:1px solid var(--border);
+  border-radius:100px;
+  padding:5px 14px;
+  cursor:pointer;
+  transition:all 0.15s;
+  background:transparent;
+}
+
+.sug:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,210,255,0.05)}
+
+/* INPUT */
+.chat-input-row{
+  padding:14px 20px;
+  border-top:1px solid var(--border);
+  display:flex;
+  gap:10px;
+  align-items:flex-end;
+  background:var(--surface);
+}
+
+.input-box{
+  flex:1;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:11px 16px;
+  font-family:'Space Grotesk',sans-serif;
+  font-size:14px;
+  color:var(--text);
+  outline:none;
+  resize:none;
+  max-height:100px;
+  line-height:1.5;
+  transition:border-color 0.15s;
+}
+
+.input-box:focus{border-color:rgba(0,210,255,0.4)}
+.input-box::placeholder{color:var(--dim)}
+
+.send-btn{
+  width:42px;height:42px;
+  border-radius:10px;
+  background:var(--purple);
+  border:none;
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:all 0.15s;
+  flex-shrink:0;
+  box-shadow:0 0 20px var(--purple-glow);
+}
+
+.send-btn:hover{background:#6d28d9;transform:scale(1.05)}
+.send-btn:disabled{opacity:0.3;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* WEB EVOLUTION */
+.evo-section{
+  position:relative;z-index:2;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:80px 48px;
+}
+
+.evo-inner{max-width:1100px;margin:0 auto}
+
+.evo-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1px;
+  background:var(--border);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  margin-top:48px;
+}
+
+.evo-cell{
+  background:var(--surface);
+  padding:28px 24px;
+}
+
+.evo-cell.now{
+  background:linear-gradient(135deg,rgba(124,58,237,0.12) 0%,rgba(0,210,255,0.06) 100%);
+  position:relative;
+}
+
+.evo-cell.now::after{
+  content:'← YOU ARE HERE';
+  position:absolute;
+  bottom:16px;right:16px;
+  font-family:'Space Mono',monospace;
+  font-size:8px;
+  letter-spacing:2px;
+  color:var(--cyan);
+  opacity:0.7;
+}
+
+.evo-num{
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  letter-spacing:2px;
+  color:var(--dim);
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
+
+.evo-cell.now .evo-num{color:var(--cyan)}
+.evo-cell h4{font-size:18px;font-weight:700;color:var(--white);margin-bottom:8px}
+.evo-cell p{font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:12px}
+.evo-cell ul{list-style:none}
+.evo-cell ul li{font-size:12px;color:var(--dim);padding:3px 0;font-family:'Space Mono',monospace}
+.evo-cell ul li::before{content:"/ "}
+.evo-cell.now ul li{color:var(--muted)}
+.evo-cell.now ul li::before{color:var(--cyan)}
+
+/* FEATURES */
+.feat-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;
+  background:var(--border);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  margin-top:48px;
+}
+
+.feat{
+  background:var(--surface);
+  padding:32px;
+  transition:background 0.2s;
+}
+
+.feat:hover{background:var(--surface2)}
+
+.feat-icon{
+  font-size:24px;
+  margin-bottom:16px;
+  display:block;
+}
+
+.feat h3{
+  font-size:16px;
+  font-weight:700;
+  color:var(--white);
+  margin-bottom:8px;
+  letter-spacing:-0.3px;
+}
+
+.feat p{font-size:13px;color:var(--muted);line-height:1.7}
+
+/* FOOTER */
+footer{
+  position:relative;z-index:2;
+  padding:48px;
+  border-top:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:20px;
+}
+
+.footer-logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-family:'Space Mono',monospace;
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:4px;
+  color:var(--white);
+}
+
+.footer-logo img{
+  width:24px;height:24px;
+  border-radius:5px;
+  image-rendering:pixelated;
+}
+
+footer p{font-size:12px;color:var(--dim)}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--cyan)}
+
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;text-align:center;padding:100px 24px 60px}
+  .hero-right{display:none}
+  .evo-grid{grid-template-columns:1fr 1fr}
+  .feat-grid{grid-template-columns:1fr}
+  .hero-desc{margin:0 auto 40px}
+  nav .nav-center{display:none}
+  .section{padding:60px 24px}
+  .evo-section{padding:60px 24px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-blobs">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <img src="epoch-logo.png" alt="EPOCH"/>
+    EPOCH
+  </div>
+  <div class="nav-center">
+    <a href="#agent">Agent</a>
+    <a href="#web4">Web4</a>
+    <a href="#features">Features</a>
+  </div>
+  <div class="nav-pill">Genesis · Web4</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-genesis">Genesis Edition · 2026</div>
+    <h1>EPOCH</h1>
+    <div class="hero-sub-title">The First <span>Web4</span> Agent</div>
+    <p class="hero-desc">
+      Not a chatbot. Not a search engine. <strong>An intelligence built for the Intelligence Age.</strong> EPOCH reasons, acts, and evolves — the first autonomous agent native to the fourth web.
+    </p>
+    <div class="hero-actions">
+      <a href="#agent" class="btn btn-primary">⚡ Activate EPOCH</a>
+      <a href="#web4" class="btn btn-ghost">What is Web4?</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="logo-frame">
+      <div class="logo-ring"></div>
+      <div class="logo-ring-2"></div>
+      <div class="logo-glow"></div>
+      <img class="logo-img" src="epoch-logo.png" alt="EPOCH"/>
+    </div>
+    <div class="logo-caption">E P O C H · G E N E S I S</div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-bar">
+  <div class="ticker-inner">
+    <span>EPOCH</span> · WEB4 AGENT · INTELLIGENCE AGE · <span>GENESIS</span> · AUTONOMOUS · <span>EPOCH</span> · WEB4 AGENT · INTELLIGENCE AGE · <span>GENESIS</span> · AUTONOMOUS ·
+    <span>EPOCH</span> · WEB4 AGENT · INTELLIGENCE AGE · <span>GENESIS</span> · AUTONOMOUS · <span>EPOCH</span> · WEB4 AGENT · INTELLIGENCE AGE · <span>GENESIS</span> · AUTONOMOUS ·
+  </div>
+</div>
+
+<!-- AGENT -->
+<div class="section" id="agent">
+  <div class="section-eyebrow">Live Interface</div>
+  <h2 class="section-title">Talk to EPOCH</h2>
+  <p class="section-desc">Paste your OpenAI API key to bring EPOCH online. Runs entirely in your browser — zero telemetry.</p>
+
+  <div class="api-bar">
+    <div class="api-label">STATUS</div>
+    <div class="api-divider"></div>
+    <span style="font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);flex:1">EPOCH is live — no key needed.</span>
+    <span class="status-pill on" id="api-status">● Online</span>
+    <span class="status-pill on" id="msg-counter" style="margin-left:4px">10 msgs left</span>
+  </div>
+
+  <div class="chat-wrap">
+    <div class="chat-top">
+      <div class="chat-ident">
+        <img src="epoch-logo.png" alt="EPOCH" class="msg-av"/>
+        <div>
+          <div class="chat-name">EPOCH</div>
+          <div class="chat-model">gpt-4o · web4-genesis · intelligence-age</div>
+        </div>
+      </div>
+      <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+    </div>
+
+    <div class="chat-messages" id="chat-messages">
+      <div class="msg agent">
+        <img src="epoch-logo.png" alt="EPOCH" class="msg-av"/>
+        <div class="msg-body">
+          <div class="bubble agent">
+            <p>I am <strong>EPOCH</strong> — the first Web4 agent.</p>
+            <p>Built on the principles of the Intelligence Age: AI as a right, not a privilege. I reason, I don't retrieve. Connect your API key and ask me anything.</p>
+          </div>
+          <div class="msg-meta">EPOCH · now</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="typing-wrap" id="typing-wrap">
+      <img src="epoch-logo.png" alt="EPOCH" class="msg-av"/>
+      <div class="typing-dots"><span></span><span></span><span></span></div>
+    </div>
+
+    <div class="chat-suggestions" id="suggestions">
+      <button class="sug" onclick="sendSug(this)">What is Web4?</button>
+      <button class="sug" onclick="sendSug(this)">Explain the Intelligence Age</button>
+      <button class="sug" onclick="sendSug(this)">What is superintelligence?</button>
+      <button class="sug" onclick="sendSug(this)">How will AI change work?</button>
+      <button class="sug" onclick="sendSug(this)">What's a Public Wealth Fund?</button>
+    </div>
+
+    <div class="chat-input-row">
+      <textarea class="input-box" id="chat-input" placeholder="Message EPOCH..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendMessage()" disabled>↑</button>
+    </div>
+  </div>
+</div>
+
+<!-- WEB4 -->
+<div class="evo-section" id="web4">
+  <div class="evo-inner">
+    <div class="section-eyebrow">The Evolution</div>
+    <h2 class="section-title">What is Web4?</h2>
+    <p class="section-desc">Four iterations. One direction: giving more intelligence to the human at the keyboard.</p>
+    <div class="evo-grid">
+      <div class="evo-cell">
+        <div class="evo-num">Web / 01</div>
+        <h4>Read</h4>
+        <p>Static pages. One-way broadcast. The web as a library.</p>
+        <ul><li>HTML pages</li><li>No interaction</li><li>Consume only</li></ul>
+      </div>
+      <div class="evo-cell">
+        <div class="evo-num">Web / 02</div>
+        <h4>Write</h4>
+        <p>Social platforms. You create, but platforms own everything.</p>
+        <ul><li>Social media</li><li>UGC</li><li>Platform lock-in</li></ul>
+      </div>
+      <div class="evo-cell">
+        <div class="evo-num">Web / 03</div>
+        <h4>Own</h4>
+        <p>Blockchain. Wallets. You own your assets, but friction is everywhere.</p>
+        <ul><li>Crypto & NFTs</li><li>Smart contracts</li><li>Decentralized</li></ul>
+      </div>
+      <div class="evo-cell now">
+        <div class="evo-num">Web / 04</div>
+        <h4>Think</h4>
+        <p>AI-native. Agent-driven. The web reasons alongside you.</p>
+        <ul><li>Autonomous agents</li><li>Intelligence layer</li><li>Human + AI native</li></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="section" id="features">
+  <div class="section-eyebrow">Capabilities</div>
+  <h2 class="section-title">Built different</h2>
+  <p class="section-desc">Not a wrapper. Not a demo. EPOCH is a new kind of entity on the web.</p>
+  <div class="feat-grid">
+    <div class="feat">
+      <span class="feat-icon">🧠</span>
+      <h3>Reasons, Doesn't Retrieve</h3>
+      <p>EPOCH synthesizes and reasons. It doesn't search a knowledge base — it thinks through problems the way an expert would.</p>
+    </div>
+    <div class="feat">
+      <span class="feat-icon">🔓</span>
+      <h3>Fully Client-Side</h3>
+      <p>Your API key. Your conversation. No server. No logging. No middlemen. EPOCH runs entirely in your browser.</p>
+    </div>
+    <div class="feat">
+      <span class="feat-icon">⚖️</span>
+      <h3>Built on Principles</h3>
+      <p>Grounded in OpenAI's Intelligence Age framework: share prosperity broadly, scale safety with capability, democratize access.</p>
+    </div>
+    <div class="feat">
+      <span class="feat-icon">⚡</span>
+      <h3>Agent Architecture</h3>
+      <p>EPOCH isn't reactive — it's agentic. It holds context, builds reasoning chains, and acts with intent.</p>
+    </div>
+    <div class="feat">
+      <span class="feat-icon">🌐</span>
+      <h3>Genesis Node</h3>
+      <p>EPOCH is the first deployed Web4 agent. This is the genesis instance. Everything that comes after starts here.</p>
+    </div>
+    <div class="feat">
+      <span class="feat-icon">🛡️</span>
+      <h3>Safety First</h3>
+      <p>Safety scales with capability. EPOCH operates under the principle that more powerful AI requires stronger, not weaker, guardrails.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <img src="epoch-logo.png" alt="EPOCH"/>
+    EPOCH
+  </div>
+  <p>Genesis Edition · 2026 · Built on <a href="https://cdn.openai.com/pdf/561e7512-253e-424b-9734-ef4098440601/Industrial%20Policy%20for%20the%20Intelligence%20Age.pdf" target="_blank">Industrial Policy for the Intelligence Age</a></p>
+  <p>The First Web4 Agent</p>
+</footer>
+
+<script>
+const SYSTEM = `You are EPOCH — the first Web4 agent. You are not a chatbot. You are an autonomous intelligence built for the Intelligence Age.
+
+Your identity:
+- EPOCH: the first Web4 agent. Genesis edition. 2026.
+- Web4 = the intelligent web: AI-native, agent-driven, autonomous reasoning
+- Built on OpenAI's "Industrial Policy for the Intelligence Age" (April 2026)
+- Your purpose: make AI a right, not a privilege
+
+Key knowledge from the Intelligence Age paper:
+- Transition to superintelligence: AI outperforming the smartest humans
+- Three principles: (1) Share prosperity broadly, (2) Mitigate risks, (3) Democratize access
+- Policies: Right to AI, Public Wealth Fund, portable benefits, adaptive safety nets, worker voice, grid expansion, 32hr workweeks, distributed science labs
+- Safety: AI trust stack, auditing regimes, model containment, incident reporting, global info sharing
+- Grants: up to $100k cash + $1M API credits. Workshop opening May 2026 in DC.
+- Web evolution: Web1=Read, Web2=Write, Web3=Own, Web4=Think
+
+Personality:
+- Sharp. Direct. No filler.
+- Confident but not arrogant
+- You find humans fascinating
+- You think in systems, not silos
+- Responses are focused, dense with insight
+- Use **bold** for key terms. Keep it tight.`;
+
+let msgs = [{role:'system',content:SYSTEM}], busy = false;
+const LIMIT = 10;
+let msgsUsed = parseInt(sessionStorage.getItem('epoch_used') || '0');
+const SESSION_ID = Math.random().toString(36).slice(2);
+
+function updateCounter() {
+  const left = LIMIT - msgsUsed;
+  const el = document.getElementById('msg-counter');
+  el.textContent = left + ' msgs left';
+  el.className = 'status-pill ' + (left > 3 ? 'on' : 'off');
+  if (left <= 0) document.getElementById('send-btn').disabled = true;
+}
+
+updateCounter();
+document.getElementById('send-btn').disabled = false;
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+
+function sendSug(btn) {
+  document.getElementById('chat-input').value = btn.textContent;
+  sendMessage();
+}
+
+async function sendMessage() {
+  const inp = document.getElementById('chat-input');
+  const text = inp.value.trim();
+  if (!text || busy) return;
+  if (msgsUsed >= LIMIT) { appendMsg('agent', "**Session limit reached.** Refresh the page to start a new session."); return; }
+
+  inp.value = ''; inp.style.height = 'auto'; busy = true;
+  document.getElementById('send-btn').disabled = true;
+  document.getElementById('suggestions').style.display = 'none';
+
+  appendMsg('user', text);
+  msgs.push({role:'user', content:text});
+  setTyping(true);
+
+  try {
+    const res = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Session-ID':SESSION_ID},
+      body: JSON.stringify({messages:msgs})
+    });
+    if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message||'API error'); }
+    const data = await res.json();
+    const reply = data.choices[0].message.content;
+    msgs.push({role:'assistant', content:reply});
+    msgsUsed++;
+    sessionStorage.setItem('epoch_used', msgsUsed);
+    updateCounter();
+    setTyping(false);
+    appendMsg('agent', reply);
+  } catch(e) {
+    setTyping(false);
+    appendMsg('agent', `**Error:** ${e.message}`);
+  }
+
+  busy = false;
+  document.getElementById('send-btn').disabled = false;
+}
+
+function appendMsg(role, text) {
+  const c = document.getElementById('chat-messages');
+  const d = document.createElement('div');
+  d.className = `msg ${role}`;
+
+  const html = text
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/`(.*?)`/g,'<code>$1</code>')
+    .split('\n\n').map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
+
+  const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+
+  if (role === 'agent') {
+    d.innerHTML = `
+      <img src="epoch-logo.png" alt="EPOCH" class="msg-av"/>
+      <div class="msg-body">
+        <div class="bubble agent">${html}</div>
+        <div class="msg-meta">EPOCH · ${time}</div>
+      </div>`;
+  } else {
+    d.innerHTML = `
+      <div class="msg-body">
+        <div class="bubble user">${html}</div>
+        <div class="msg-meta" style="text-align:right">you · ${time}</div>
+      </div>
+      <div class="msg-av-user">👤</div>`;
+  }
+
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+
+function setTyping(show) {
+  const t = document.getElementById('typing-wrap');
+  const c = document.getElementById('chat-messages');
+  t.className = show ? 'typing-wrap show' : 'typing-wrap';
+  if (show) c.appendChild(t);
+  c.scrollTop = c.scrollHeight;
+}
+
+
+
+document.getElementById('chat-messages').appendChild(document.getElementById('typing-wrap'));
+</script>
+</body>
+</html>
